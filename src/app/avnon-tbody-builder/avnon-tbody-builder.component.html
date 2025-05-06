@@ -1,0 +1,105 @@
+<tbody class="bg-white divide-y divide-gray-300">
+  <tr>
+    <td class="font-bold text-xl px-4" [attr.colspan]="monthCols.length + 1">
+      {{ title }}
+    </td>
+  </tr>
+  @for (category of categories; track category;let iCat = $index) { @for (subCat
+  of category.subCategories; track subCat;let iSub = $index;let last = $last) {
+  @if (subCat) {
+  <tr class="whitespace-nowrap">
+    <td class="text-sm">
+      @if (iSub === 0) {
+      <div class="flex items-center w-full">
+        <input
+          id="{{ title }}-cat{{ iCat }}-sub{{ iSub }}"
+          type="text"
+          class="px-4 font-semibold flex-auto"
+          [(ngModel)]="category.name"
+          (ngModelChange)="subCat.name = category.name"
+          (keyup.enter)="addSubCat(iCat, iSub)"
+        />
+        <mat-icon
+          class="!w-[20px] !h-[20px] !text-[20px]"
+          (click)="removeSubCat(iCat, iSub)"
+          >delete</mat-icon
+        >
+      </div>
+      } @else {
+      <div class="flex items-center w-full">
+        <input
+          id="{{ title }}-cat{{ iCat }}-sub{{ iSub }}"
+          type="text"
+          class="px-4 flex-auto"
+          [(ngModel)]="subCat.name"
+          (keyup.enter)="addSubCat(iCat, iSub)"
+        />
+        <mat-icon
+          class="!w-[20px] !h-[20px] !text-[20px]"
+          (click)="removeSubCat(iCat, iSub)"
+          >delete</mat-icon
+        >
+      </div>
+
+      }
+    </td>
+    @for (monthCol of monthCols; track monthCol) {
+    <td class="text-sm text-gray-500">
+      <input
+        id="{{ title }}-cat{{ iCat }}-sub{{ iSub }}-{{ monthCol }}"
+        type="text"
+        class="px-4 text-right w-full"
+        [(ngModel)]="subCat[monthCol]"
+        (ngModelChange)="
+          changeIncomeMonth(iCat, iSub, monthCol, subCat[monthCol])
+        "
+        (keyup)="onKey($event)"
+      />
+    </td>
+    }
+  </tr>
+  } @if (last) {
+  <tr class="whitespace-nowrap">
+    <td class="text-sm px-4 font-medium">Sub Totals</td>
+    @for (monthCol of monthCols; track monthCol) {
+    <td class="text-sm px-4 text-right">
+      {{ category.totals[monthCol] }}
+    </td>
+    }
+  </tr>
+  <tr>
+    <td class="text-sm px-4" [attr.colspan]="monthCols.length + 1">&nbsp;</td>
+  </tr>
+  } } }
+  <tr>
+    <td class="text-sm">
+      <input
+        id="{{ title }}-inputAddCategory"
+        placeholder="Add new Parent Category"
+        type="text"
+        class="px-4 font-semibold w-full"
+        [(ngModel)]="inputAddCategory"
+        (keyup.enter)="addIncomeCategory(inputAddCategory)"
+      />
+    </td>
+    @for (monthCol of monthCols; track monthCol) {
+    <td class="text-sm px-4">&nbsp;</td>
+    }
+  </tr>
+  <tr>
+    <td class="text-sm px-4" [attr.colspan]="monthCols.length + 1">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td class="text-sm px-4 font-medium">Total {{ title }}</td>
+    @for (monthCol of monthCols; track monthCol) {
+    <td class="text-sm px-4 font-bold text-right">
+      {{ totals[monthCol] }}
+    </td>
+    }
+  </tr>
+
+  <tr>
+    <td class="text-sm px-4" [attr.colspan]="monthCols.length + 1">&nbsp;</td>
+  </tr>
+</tbody>

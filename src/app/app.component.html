@@ -1,0 +1,93 @@
+<mat-toolbar class="!bg-sky-500/75 !text-white">
+  <span>Avnon Bubget Builder</span>
+</mat-toolbar>
+<div class="container-fluid overflow-auto max-h-[calc(100vh-64px)]">
+  @if (period) {
+  <div class="flex items-center justify-center text-center mt-1">
+    <avnon-date-range
+      class="mr-1"
+      [placeholder]="'From month'"
+      [value]="period.from"
+      (monthChange)="monthChange($event, 'from')"
+    ></avnon-date-range>
+    <avnon-date-range
+      [placeholder]="'To month'"
+      [value]="period.to"
+      [min]="period.from"
+      (monthChange)="monthChange($event, 'to')"
+    ></avnon-date-range>
+  </div>
+
+  }
+
+  <table>
+    <tr>
+      <th></th>
+    </tr>
+  </table>
+
+  <div class="flex px-4">
+    <div class="flex flex-col">
+      <div class="w-full">
+        <div class="border-b border-gray-200 shadow">
+          <table class="divide-y divide-gray-300">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-4 py-2 text-xs text-gray-500 whitespace-nowrap">
+                  The period from {{ period.from | date : "MMM yyyy" }} to
+                  {{ period.to | date : "MMM yyyy" }}
+                </th>
+                @for (monthCol of monthCols; track monthCol) {
+                <th class="px-4 py-2 text-xs text-gray-500 text-right">
+                  {{ monthCol }}
+                </th>
+                }
+              </tr>
+            </thead>
+
+            <avnon-tbody-builder
+              [title]="'Income'"
+              [monthCols]="monthCols"
+              [categories]="incomeCategories"
+              (update)="updateBuilder($event)"
+            ></avnon-tbody-builder>
+            <avnon-tbody-builder
+              [title]="'Expenses'"
+              [monthCols]="monthCols"
+              (update)="updateBuilder($event)"
+            ></avnon-tbody-builder>
+
+            <tbody class="bg-white divide-y divide-gray-300">
+              <tr>
+                <td class="text-sm px-4 font-medium">Profit / Loss</td>
+                @for (monthCol of monthCols; track monthCol) {
+                <td class="text-sm px-4 font-bold text-right">
+                  {{balanceByMonth[monthCol]?.profit || 0}}
+                </td>
+                }
+              </tr>
+              <tr>
+                <td class="text-sm px-4 font-medium">Opening Balance</td>
+                @for (monthCol of monthCols; track monthCol) {
+                <td class="text-sm px-4 font-bold text-right">
+                  {{balanceByMonth[monthCol]?.openingBalance || 0}}
+                </td>
+                }
+              </tr>
+              <tr>
+                <td class="text-sm px-4 font-medium">Closing Balance</td>
+                @for (monthCol of monthCols; track monthCol) {
+                <td class="text-sm px-4 font-bold text-right">
+                  {{balanceByMonth[monthCol]?.closingBalance || 0}}
+                </td>
+                }
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- <router-outlet /> -->
