@@ -54,9 +54,24 @@
           changeIncomeMonth(iCat, iSub, monthCol, subCat[monthCol])
         "
         (keyup)="onKey($event)"
+        (contextmenu)="openContextMenu($event, iCat, iSub, subCat[monthCol])"
       />
     </td>
     }
+
+    <div
+      style="visibility: hidden; position: fixed"
+      [style.left]="contextMenuPosition.x"
+      [style.top]="contextMenuPosition.y"
+      [matMenuTriggerFor]="contextMenu"
+    ></div>
+    <mat-menu #contextMenu="matMenu">
+      <ng-template matMenuContent let-iCat="iCat" let-iSub="iSub" let-value="value">
+        <button mat-menu-item (click)="copyToAll(iCat, iSub, value)">
+            Apply to all
+        </button>
+      </ng-template>
+    </mat-menu>
   </tr>
   } @if (last) {
   <tr class="whitespace-nowrap">

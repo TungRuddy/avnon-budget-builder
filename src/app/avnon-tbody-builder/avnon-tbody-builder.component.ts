@@ -6,6 +6,7 @@ import {
   OnInit,
   Output,
   SimpleChanges,
+  ViewChild,
 } from '@angular/core';
 import { IncomeCategories } from '../models/income.model';
 import { CommonModule } from '@angular/common';
@@ -13,13 +14,14 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 
 @Component({
   selector: 'avnon-tbody-builder',
   imports: [
     MatButtonModule,
     MatIconModule,
-
+    MatMenuModule,
     ReactiveFormsModule,
     FormsModule,
     MatInputModule,
@@ -29,7 +31,6 @@ import { MatInputModule } from '@angular/material/input';
   styleUrl: './avnon-tbody-builder.component.scss',
 })
 export class AvnonTbodyBuilderComponent implements OnInit, OnChanges {
-
   @Input() title?: string;
   @Input() monthCols: string[] = [];
 
@@ -40,6 +41,10 @@ export class AvnonTbodyBuilderComponent implements OnInit, OnChanges {
   @Output() update = new EventEmitter<this>();
 
   inputAddCategory: string = '';
+
+  @ViewChild(MatMenuTrigger) contextMenu!: MatMenuTrigger;
+
+  contextMenuPosition = { x: '0px', y: '0px' };
 
   ngOnInit(): void {}
   ngOnChanges(changes: SimpleChanges): void {
@@ -99,7 +104,6 @@ export class AvnonTbodyBuilderComponent implements OnInit, OnChanges {
   }
 
   changeIncomeMonth(iCat: number, iSub: number, month: string, value: number) {
-    console.log(iCat, iSub, month, this.categories);
     this.categories[iCat].subCategories[iSub][month] = Number(value);
     this.categories[iCat].totals[month] = this.buildTotalByMonth(
       this.categories[iCat].subCategories,
@@ -115,7 +119,9 @@ export class AvnonTbodyBuilderComponent implements OnInit, OnChanges {
     );
     this.update.emit(this);
     setTimeout(() => {
-      document.getElementById(`${this.title}-cat${iCat}-sub${iSub + 1}`)?.focus();
+      document
+        .getElementById(`${this.title}-cat${iCat}-sub${iSub + 1}`)
+        ?.focus();
     });
   }
 
@@ -133,27 +139,60 @@ export class AvnonTbodyBuilderComponent implements OnInit, OnChanges {
   removeSubCat(iCat: number, iSub: number) {
     this.categories[iCat].subCategories.splice(iSub, 1);
     console.log(this.categories);
-    if(this.categories[iCat].subCategories.length === 1) {
+    if (this.categories[iCat].subCategories.length === 1) {
       this.categories[iCat].name = this.categories[iCat].subCategories[0].name;
-    };
+    }
     this.buildIncomeCategories();
     this.computeIncomeTotals();
   }
 
+  openContextMenu(
+    event: MouseEvent,
+    iCat: number,
+    iSub: number,
+    value: number
+  ) {
+    event.preventDefault();
+
+    this.contextMenuPosition.x = event.clientX + 'px';
+    this.contextMenuPosition.y = event.clientY + 'px';
+    this.contextMenu.menuData = { 'iCat': iCat, 'iSub': iSub, 'value': value };
+    this.contextMenu.openMenu();
+  }
+
+  copyToAll( iCat: number,
+    iSub: number,
+    value: number){
+      this.monthCols.forEach((month) => {
+        this.categories[iCat].subCategories[iSub][month] = Number(value);
+        this.categories[iCat].totals[month] = this.buildTotalByMonth(
+          this.categories[iCat].subCategories,
+          month
+        );
+      });
+
+      this.computeIncomeTotals();
+
+  }
 
   onKey(event: KeyboardEvent) {
     const thiss = this;
     function processFocus(key: string) {
       const id = (event.target as HTMLInputElement).id;
       const arrKeys = id.split('-');
-      if(arrKeys.length === 4) {
+      if (arrKeys.length === 4) {
         switch (key) {
           case 'ArrowLeft':
-            arrKeys[3] = thiss.monthCols[thiss.monthCols.findIndex((m) => m === arrKeys[3]) - 1];
+            arrKeys[3] =
+              thiss.monthCols[
+                thiss.monthCols.findIndex((m) => m === arrKeys[3]) - 1
+              ];
             break;
           case 'ArrowRight':
-            
-            arrKeys[3] = thiss.monthCols[thiss.monthCols.findIndex((m) => m === arrKeys[3]) + 1];
+            arrKeys[3] =
+              thiss.monthCols[
+                thiss.monthCols.findIndex((m) => m === arrKeys[3]) + 1
+              ];
             break;
           case 'ArrowUp':
             arrKeys[2] = 'sub' + String(Number(arrKeys[2].substring(3)) - 1);
@@ -164,10 +203,9 @@ export class AvnonTbodyBuilderComponent implements OnInit, OnChanges {
         }
       }
 
-      if(document.getElementById(arrKeys.join('-'))){
+      if (document.getElementById(arrKeys.join('-'))) {
         document.getElementById(arrKeys.join('-'))?.focus();
-      };
-  
+      }
     }
 
     switch (event.key) {
