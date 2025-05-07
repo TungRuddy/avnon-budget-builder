@@ -177,8 +177,8 @@ export class AvnonTbodyBuilderComponent implements OnInit, OnChanges {
     function processFocus(key: string) {
       const id = (event.target as HTMLInputElement).id;
       const arrKeys = id.split('-');
-      console.log(id, arrKeys);
-      console.log(thiss.categories);
+      // console.log(id, arrKeys);
+      // console.log(thiss.categories);
       if (arrKeys.length === 4) {
         const iCat = Number(arrKeys[1].substring(3));
         const iSub = Number(arrKeys[2].substring(3));

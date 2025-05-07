@@ -18,7 +18,7 @@
           [(ngModel)]="category.name"
           (ngModelChange)="subCat.name = category.name"
           (keyup.enter)="addSubCat(iCat, iSub)"
-          (keyup)="onKey($event)"
+          (keydown)="onKey($event)"
           autocomplete="off"
         />
         <mat-icon
@@ -35,7 +35,7 @@
           class="px-4 flex-auto"
           [(ngModel)]="subCat.name"
           (keyup.enter)="addSubCat(iCat, iSub)"
-          (keyup)="onKey($event)"
+          (keydown)="onKey($event)"
           autocomplete="off"
         />
         <mat-icon
@@ -58,7 +58,7 @@
         (ngModelChange)="
           changeIncomeMonth(iCat, iSub, monthCol, subCat[monthCol])
         "
-        (keyup)="onKey($event)"
+        (keydown)="onKey($event)"
         (contextmenu)="openContextMenu($event, iCat, iSub, subCat[monthCol])"
         autocomplete="off"
       />
@@ -101,7 +101,7 @@
         class="px-4 font-semibold w-full"
         [(ngModel)]="inputAddCategory"
         (keyup.enter)="addIncomeCategory(inputAddCategory)"
-        (keyup)="onKey($event)"
+        (keydown)="onKey($event)"
         autocomplete="off"
       />
     </td>
