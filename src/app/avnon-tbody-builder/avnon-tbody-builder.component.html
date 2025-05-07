@@ -18,6 +18,8 @@
           [(ngModel)]="category.name"
           (ngModelChange)="subCat.name = category.name"
           (keyup.enter)="addSubCat(iCat, iSub)"
+          (keyup)="onKey($event)"
+          autocomplete="off"
         />
         <mat-icon
           class="!w-[20px] !h-[20px] !text-[20px]"
@@ -33,6 +35,8 @@
           class="px-4 flex-auto"
           [(ngModel)]="subCat.name"
           (keyup.enter)="addSubCat(iCat, iSub)"
+          (keyup)="onKey($event)"
+          autocomplete="off"
         />
         <mat-icon
           class="!w-[20px] !h-[20px] !text-[20px]"
@@ -46,6 +50,7 @@
     @for (monthCol of monthCols; track monthCol) {
     <td class="text-sm text-gray-500">
       <input
+        [attr.lastcatsub]="'cat' + (categories.length - 1) + '-sub' + (categories[categories.length - 1].subCategories.length - 1)"
         id="{{ title }}-cat{{ iCat }}-sub{{ iSub }}-{{ monthCol }}"
         type="text"
         class="px-4 text-right w-full"
@@ -55,6 +60,7 @@
         "
         (keyup)="onKey($event)"
         (contextmenu)="openContextMenu($event, iCat, iSub, subCat[monthCol])"
+        autocomplete="off"
       />
     </td>
     }
@@ -95,6 +101,8 @@
         class="px-4 font-semibold w-full"
         [(ngModel)]="inputAddCategory"
         (keyup.enter)="addIncomeCategory(inputAddCategory)"
+        (keyup)="onKey($event)"
+        autocomplete="off"
       />
     </td>
     @for (monthCol of monthCols; track monthCol) {

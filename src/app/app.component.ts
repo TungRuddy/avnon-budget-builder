@@ -85,7 +85,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   updateBuilder(event: AvnonTbodyBuilderComponent) {
-    console.log(event);
+    // console.log(event);
     if (event.title === 'Income') {
       this.totals.income = event.totals;
     }

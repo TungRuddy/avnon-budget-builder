@@ -156,23 +156,20 @@ export class AvnonTbodyBuilderComponent implements OnInit, OnChanges {
 
     this.contextMenuPosition.x = event.clientX + 'px';
     this.contextMenuPosition.y = event.clientY + 'px';
-    this.contextMenu.menuData = { 'iCat': iCat, 'iSub': iSub, 'value': value };
+    this.contextMenu.menuData = { iCat: iCat, iSub: iSub, value: value };
     this.contextMenu.openMenu();
   }
 
-  copyToAll( iCat: number,
-    iSub: number,
-    value: number){
-      this.monthCols.forEach((month) => {
-        this.categories[iCat].subCategories[iSub][month] = Number(value);
-        this.categories[iCat].totals[month] = this.buildTotalByMonth(
-          this.categories[iCat].subCategories,
-          month
-        );
-      });
+  copyToAll(iCat: number, iSub: number, value: number) {
+    this.monthCols.forEach((month) => {
+      this.categories[iCat].subCategories[iSub][month] = Number(value);
+      this.categories[iCat].totals[month] = this.buildTotalByMonth(
+        this.categories[iCat].subCategories,
+        month
+      );
+    });
 
-      this.computeIncomeTotals();
-
+    this.computeIncomeTotals();
   }
 
   onKey(event: KeyboardEvent) {
@@ -180,13 +177,22 @@ export class AvnonTbodyBuilderComponent implements OnInit, OnChanges {
     function processFocus(key: string) {
       const id = (event.target as HTMLInputElement).id;
       const arrKeys = id.split('-');
+      console.log(id, arrKeys);
+      console.log(thiss.categories);
       if (arrKeys.length === 4) {
+        const iCat = Number(arrKeys[1].substring(3));
+        const iSub = Number(arrKeys[2].substring(3));
         switch (key) {
           case 'ArrowLeft':
-            arrKeys[3] =
-              thiss.monthCols[
-                thiss.monthCols.findIndex((m) => m === arrKeys[3]) - 1
-              ];
+            if (thiss.monthCols.findIndex((m) => m === arrKeys[3]) === 0) {
+              arrKeys.splice(3, 1);
+            } else {
+              arrKeys[3] =
+                thiss.monthCols[
+                  thiss.monthCols.findIndex((m) => m === arrKeys[3]) - 1
+                ];
+            }
+
             break;
           case 'ArrowRight':
             arrKeys[3] =
@@ -195,10 +201,102 @@ export class AvnonTbodyBuilderComponent implements OnInit, OnChanges {
               ];
             break;
           case 'ArrowUp':
-            arrKeys[2] = 'sub' + String(Number(arrKeys[2].substring(3)) - 1);
+            if (thiss.categories[iCat].subCategories[iSub - 1]) {
+              arrKeys[2] = 'sub' + String(iSub - 1);
+            } else if (thiss.categories[iCat - 1]) {
+              arrKeys[1] = 'cat' + String(iCat - 1);
+              arrKeys[2] =
+                'sub' +
+                String(thiss.categories[iCat - 1].subCategories.length - 1);
+            } else if(arrKeys[0] === 'Expenses'){
+              if(document.getElementById('Income-cat0-sub0-' + arrKeys[3])){
+                arrKeys[0] = ''; // to remove focus function
+                arrKeys[1] = '';
+                const lastCatSub = document.getElementById('Income-cat0-sub0-' + arrKeys[3])?.getAttribute('lastcatsub');
+                document.getElementById(`Income-${lastCatSub}-${arrKeys[3]}`)?.focus();
+              };
+            }
             break;
           case 'ArrowDown':
-            arrKeys[2] = 'sub' + String(Number(arrKeys[2].substring(3)) + 1);
+            if (thiss.categories[iCat].subCategories[iSub + 1]) {
+              arrKeys[2] = 'sub' + String(iSub + 1);
+            } else if (thiss.categories[iCat + 1]) {
+              arrKeys[1] = 'cat' + String(iCat + 1);
+              arrKeys[2] = 'sub0';
+            } else if(arrKeys[0] === 'Income'){
+              arrKeys[1] = '';
+              document
+                .getElementById(`Expenses-cat0-sub0-${arrKeys[3]}`)
+                ?.focus();
+            }
+            break;
+        }
+      } else if (arrKeys.length === 3) {
+        const iCat = Number(arrKeys[1].substring(3));
+        const iSub = Number(arrKeys[2].substring(3));
+        switch (key) {
+          case 'ArrowRight':
+            arrKeys.push(thiss.monthCols[0]);
+            break;
+          case 'ArrowUp':
+            if (thiss.categories[iCat].subCategories[iSub - 1]) {
+              arrKeys[2] = 'sub' + String(iSub - 1);
+            } else if (thiss.categories[iCat - 1]) {
+              arrKeys[1] = 'cat' + String(iCat - 1);
+              arrKeys[2] =
+                'sub' +
+                String(thiss.categories[iCat - 1].subCategories.length - 1);
+            } else if(arrKeys[0] === 'Expenses'){
+              arrKeys[0] = '';
+              arrKeys[1] = '';
+              document
+                .getElementById(`Income-inputAddCategory`)
+                ?.focus();
+            }
+            break;
+          case 'ArrowDown':
+            if (thiss.categories[iCat].subCategories[iSub + 1]) {
+              arrKeys[2] = 'sub' + String(iSub + 1);
+            } else if (thiss.categories[iCat + 1]) {
+              arrKeys[1] = 'cat' + String(iCat + 1);
+              arrKeys[2] = 'sub0';
+            } else {
+              arrKeys[1] = '';
+              arrKeys[2] = '';
+              document
+                .getElementById(`${thiss.title}-inputAddCategory`)
+                ?.focus();
+            }
+
+            break;
+        }
+      } else { // length = 2
+        switch (key) {
+          case 'ArrowUp':
+            if(thiss.categories[thiss.categories.length - 1] && thiss.categories[thiss.categories.length - 1].subCategories.length){
+              arrKeys[0] = String(thiss.title);
+              arrKeys[1] = 'cat' + String(thiss.categories.length - 1);
+              arrKeys.push(
+                'sub' +
+                  String(
+                    thiss.categories[thiss.categories.length - 1].subCategories.length - 1)
+              );
+            } else {
+              if (arrKeys[0] === 'Expenses') {
+                arrKeys[0] = 'Income';
+              }
+            }
+            break;
+          case 'ArrowDown':
+            if (arrKeys[0] === 'Income') {
+              if (document.getElementById(`Expenses-cat0-sub0`)) {
+                arrKeys[0] = '';
+                arrKeys[1] = '';
+                document.getElementById(`Expenses-cat0-sub0`)?.focus();
+              } else {
+                arrKeys[0] = 'Expenses';
+              }
+            }
             break;
         }
       }
