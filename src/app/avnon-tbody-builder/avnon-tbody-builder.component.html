@@ -14,7 +14,7 @@
         <input
           id="{{ title }}-cat{{ iCat }}-sub{{ iSub }}"
           type="text"
-          class="px-4 font-semibold flex-auto"
+          class="px-4 font-semibold flex-auto focus:outline-sky-500"
           [(ngModel)]="category.name"
           (ngModelChange)="subCat.name = category.name"
           (keyup.enter)="addSubCat(iCat, iSub)"
@@ -32,7 +32,7 @@
         <input
           id="{{ title }}-cat{{ iCat }}-sub{{ iSub }}"
           type="text"
-          class="px-4 flex-auto"
+          class="px-4 flex-auto focus:outline-sky-500"
           [(ngModel)]="subCat.name"
           (keyup.enter)="addSubCat(iCat, iSub)"
           (keydown)="onKey($event)"
@@ -53,7 +53,7 @@
         [attr.lastcatsub]="'cat' + (categories.length - 1) + '-sub' + (categories[categories.length - 1].subCategories.length - 1)"
         id="{{ title }}-cat{{ iCat }}-sub{{ iSub }}-{{ monthCol }}"
         type="text"
-        class="px-4 text-right w-full"
+        class="px-4 text-right w-full focus:outline-sky-500"
         [(ngModel)]="subCat[monthCol]"
         (ngModelChange)="
           changeIncomeMonth(iCat, iSub, monthCol, subCat[monthCol])
@@ -80,6 +80,26 @@
     </mat-menu>
   </tr>
   } @if (last) {
+    <tr class="whitespace-nowrap">
+      <td class="text-sm">
+        <input
+          id="{{ title }}-cat{{ iCat }}-sub{{ categories[iCat].subCategories.length }}"
+          placeholder="Add new ‘{{ category?.name }}’ category"
+          type="text"
+          class="px-4 w-full focus:outline-sky-500"
+          #inputAddSubCategory
+          (keyup.enter)="addSubCat(iCat, categories[iCat].subCategories.length - 1, inputAddSubCategory.value)"
+          (keydown)="onKey($event)"
+          autocomplete="off"
+        />
+      </td>
+      @for (monthCol of monthCols; track monthCol) {
+      <td class="text-sm px-4 text-right">
+        &nbsp;
+      </td>
+      }
+    </tr>
+
   <tr class="whitespace-nowrap">
     <td class="text-sm px-4 font-medium">Sub Totals</td>
     @for (monthCol of monthCols; track monthCol) {
@@ -98,7 +118,7 @@
         id="{{ title }}-inputAddCategory"
         placeholder="Add new Parent Category"
         type="text"
-        class="px-4 font-semibold w-full"
+        class="px-4 font-semibold w-full focus:outline-sky-500"
         [(ngModel)]="inputAddCategory"
         (keyup.enter)="addIncomeCategory(inputAddCategory)"
         (keydown)="onKey($event)"

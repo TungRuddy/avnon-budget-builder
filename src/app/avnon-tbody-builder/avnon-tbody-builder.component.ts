@@ -112,8 +112,10 @@ export class AvnonTbodyBuilderComponent implements OnInit, OnChanges {
     this.computeIncomeTotals();
   }
 
-  addSubCat(iCat: number, iSub: number) {
-    this.categories[iCat].subCategories.splice(iSub + 1, 0, { name: '' });
+  addSubCat(iCat: number, iSub: number, name?: string) {
+    this.categories[iCat].subCategories.splice(iSub + 1, 0, {
+      name: name ?? '',
+    });
     this.categories[iCat].subCategories = this.buildSubCategories(
       this.categories[iCat].subCategories
     );
@@ -208,13 +210,17 @@ export class AvnonTbodyBuilderComponent implements OnInit, OnChanges {
               arrKeys[2] =
                 'sub' +
                 String(thiss.categories[iCat - 1].subCategories.length - 1);
-            } else if(arrKeys[0] === 'Expenses'){
-              if(document.getElementById('Income-cat0-sub0-' + arrKeys[3])){
+            } else if (arrKeys[0] === 'Expenses') {
+              if (document.getElementById('Income-cat0-sub0-' + arrKeys[3])) {
                 arrKeys[0] = ''; // to remove focus function
                 arrKeys[1] = '';
-                const lastCatSub = document.getElementById('Income-cat0-sub0-' + arrKeys[3])?.getAttribute('lastcatsub');
-                document.getElementById(`Income-${lastCatSub}-${arrKeys[3]}`)?.focus();
-              };
+                const lastCatSub = document
+                  .getElementById('Income-cat0-sub0-' + arrKeys[3])
+                  ?.getAttribute('lastcatsub');
+                document
+                  .getElementById(`Income-${lastCatSub}-${arrKeys[3]}`)
+                  ?.focus();
+              }
             }
             break;
           case 'ArrowDown':
@@ -223,7 +229,7 @@ export class AvnonTbodyBuilderComponent implements OnInit, OnChanges {
             } else if (thiss.categories[iCat + 1]) {
               arrKeys[1] = 'cat' + String(iCat + 1);
               arrKeys[2] = 'sub0';
-            } else if(arrKeys[0] === 'Income'){
+            } else if (arrKeys[0] === 'Income') {
               arrKeys[1] = '';
               document
                 .getElementById(`Expenses-cat0-sub0-${arrKeys[3]}`)
@@ -241,21 +247,28 @@ export class AvnonTbodyBuilderComponent implements OnInit, OnChanges {
           case 'ArrowUp':
             if (thiss.categories[iCat].subCategories[iSub - 1]) {
               arrKeys[2] = 'sub' + String(iSub - 1);
+            } else if (iSub === 0 && thiss.categories[iCat - 1]) {
+              arrKeys[1] = 'cat' + String(iCat - 1);
+              arrKeys[2] =
+                'sub' + String(thiss.categories[iCat - 1].subCategories.length);
             } else if (thiss.categories[iCat - 1]) {
               arrKeys[1] = 'cat' + String(iCat - 1);
               arrKeys[2] =
                 'sub' +
                 String(thiss.categories[iCat - 1].subCategories.length - 1);
-            } else if(arrKeys[0] === 'Expenses'){
+            } else if (arrKeys[0] === 'Expenses') {
               arrKeys[0] = '';
               arrKeys[1] = '';
-              document
-                .getElementById(`Income-inputAddCategory`)
-                ?.focus();
+              document.getElementById(`Income-inputAddCategory`)?.focus();
             }
             break;
           case 'ArrowDown':
             if (thiss.categories[iCat].subCategories[iSub + 1]) {
+              arrKeys[2] = 'sub' + String(iSub + 1);
+            } else if (
+              iSub ===
+              thiss.categories[iCat].subCategories.length - 1
+            ) {
               arrKeys[2] = 'sub' + String(iSub + 1);
             } else if (thiss.categories[iCat + 1]) {
               arrKeys[1] = 'cat' + String(iCat + 1);
@@ -270,16 +283,22 @@ export class AvnonTbodyBuilderComponent implements OnInit, OnChanges {
 
             break;
         }
-      } else { // length = 2
+      } else {
+        // length = 2
         switch (key) {
           case 'ArrowUp':
-            if(thiss.categories[thiss.categories.length - 1] && thiss.categories[thiss.categories.length - 1].subCategories.length){
+            if (
+              thiss.categories[thiss.categories.length - 1] &&
+              thiss.categories[thiss.categories.length - 1].subCategories.length
+            ) {
               arrKeys[0] = String(thiss.title);
               arrKeys[1] = 'cat' + String(thiss.categories.length - 1);
               arrKeys.push(
                 'sub' +
                   String(
-                    thiss.categories[thiss.categories.length - 1].subCategories.length - 1)
+                    thiss.categories[thiss.categories.length - 1].subCategories
+                      .length
+                  )
               );
             } else {
               if (arrKeys[0] === 'Expenses') {
